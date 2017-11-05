@@ -1,43 +1,29 @@
+from itertools import product
 
-class SudokuBoard(object):
 
-    DIGITS = set(range(1, 10))
+def check_sudoku(grid):
+    """Validate a sudoku solution.
 
-    def __init__(self, values):
-        self.values = values
+    Given a grid as a list of lists, return None if it is ill-formed,
+    False if it is invalid, or True if it is a valid solution.
+    """
+    assert isinstance(grid, list)
 
-    def row(self, n):
-        return self.values[n]
+    # Check that the grid is 9x9.
+    if len(grid) != 9 or not all(len(row) == 9 for row in grid):
+        return None
 
-    def rows(self):
-        return self.values
+    digits = set(range(1, 10))
+    threes = [(0, 1, 2), (3, 4, 5), (6, 7, 8)]
 
-    def cols(self):
-        return [self.col(i) for i in xrange(9)]
+    def correct(groups):
+        return all(set(group) == digits for group in groups)
 
-    def col(self, n):
-        return [self.values[i][n] for i in xrange(len(self.values))]
+    rows = grid
+    columns = zip(*grid)
+    squares3x3 = [
+        [grid[r][c] for r, c in product(row_block, col_block)]
+        for row_block, col_block in product(threes, threes)
+    ]
 
-    def groups(self):
-        return [self.group(i) for i in xrange(9)]
-
-    def group(self, n):
-        start_r = (n / 3) * 3
-        start_c = n * 3 % 9
-        values = []
-        for row in xrange(start_r, start_r + 3):
-            for col in xrange(start_c, start_c + 3):
-                values.append(self.values[row][col])
-        return values
-
-    def is_correct(self):
-        for row in self.rows():
-            if self.DIGITS - set(row):
-                return False
-        for col in self.cols():
-            if self.DIGITS - set(col):
-                return False
-        for group in self.groups():
-            if self.DIGITS - set(group):
-                return False
-        return True
+    return correct(rows) and correct(columns) and correct(squares3x3)
