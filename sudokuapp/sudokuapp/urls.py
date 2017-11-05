@@ -13,11 +13,13 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.contrib import admin
 from sudoku import views
+from sudoku.views import puzzle_element
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'$', views.HomePageView.as_view()),
+    url(r'^$', views.HomePageView.as_view()),
+    url(r'^puzzle/(?P<pk>\d+)/$', puzzle_element, name='puzzle'),
 ]
